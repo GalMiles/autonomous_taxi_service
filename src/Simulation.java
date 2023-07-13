@@ -153,7 +153,6 @@ public class Simulation {
             if(taxi.position.y - 0.4 <= destination.y) {
                 taxi.position.y  = destination.y;
                 taxi.drivingToStart = false;
-
             }
             //taxi continue moving
             else {
