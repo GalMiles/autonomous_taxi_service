@@ -3,13 +3,14 @@ import java.util.*;
 public class Simulation {
     private static final int INTERVAL = 20000; // Interval in milliseconds
     private int simulationDuration = 0; // Duration in miliseconds
+    private static final int NUM_OF_TAXIS = 10;
 
     Taxi[] taxis;
     Queue<Ride> orderingQueue;
     Timer timer;
 
     Simulation() {
-        taxis = new Taxi[10];
+        taxis = new Taxi[NUM_OF_TAXIS];
         orderingQueue = new LinkedList<Ride>();
         timer = new Timer();
     }
@@ -17,7 +18,7 @@ public class Simulation {
     void initialTaxis() {
 
         //generate random (x,y) coordinates to every taxi between 20km x 20km
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < NUM_OF_TAXIS; i++) {
             Coordinate randomCoordinate = Coordinate.generateRandomCoordinate();
             taxis[i] = new Taxi(randomCoordinate, i+1);
         }
@@ -75,69 +76,6 @@ public class Simulation {
         }, 0, INTERVAL);
     }
 
-    //move taxi to destination
-    void move(Taxi taxi, Coordinate destination) {
-        //calculate movement
-        if(taxi.direction == Direction.RIGHT) {
-            //taxi should move and stop after this move
-            if(taxi.position.x + 0.4 >= destination.x) {
-                taxi.position.x  = destination.x;
-
-                //change direction if needed
-                if(taxi.position.y < destination.y) {
-                    taxi.direction = Direction.UP;
-                }
-                else {
-                    taxi.direction = Direction.DOWN;
-                }
-            }
-            //taxi continue moving
-            else {
-                taxi.position.x += 0.4;
-            }
-        }
-        else if(taxi.direction == Direction.LEFT) {
-            //taxi should move and stop after this move
-            if(taxi.position.x - 0.4 <= destination.x) {
-                taxi.position.x  = destination.x;
-
-                //change direction if needed
-                if(taxi.position.y < destination.y) {
-                    taxi.direction = Direction.UP;
-                }
-                else {
-                    taxi.direction = Direction.DOWN;
-                }
-            }
-            //taxi continue moving
-            else {
-                taxi.position.x -= 0.4;
-            }
-        }
-        else if(taxi.direction == Direction.UP) {
-            //taxi should move and stop after this move
-            if(taxi.position.y + 0.4 >= destination.y) {
-                taxi.position.y  = destination.y;
-                taxi.drivingToStart = false;
-            }
-            //taxi continue moving
-            else {
-                taxi.position.y += 0.4;
-            }
-        }
-        else if(taxi.direction == Direction.DOWN) {
-            //taxi should move and stop
-            if(taxi.position.y - 0.4 <= destination.y) {
-                taxi.position.y  = destination.y;
-                taxi.drivingToStart = false;
-            }
-            //taxi continue moving
-            else {
-                taxi.position.y -= 0.4;
-            }
-        }
-    }
-
     void updateTaxiState() {
         for(Taxi taxi : taxis) {
             if(!taxi.isStanding) {
@@ -148,7 +86,7 @@ public class Simulation {
 
                 //check where taxi riding to? start point or end point?
                 //taxi is riding to start point
-                if(!taxi.drivingByRequest) {
+                if(taxi.drivingToStart) {
                     //arrived to x
                     if (taxi.position.x == taxi.ride.start.x) {
                         if(taxi.position.y != taxi.ride.start.y) {
@@ -207,6 +145,69 @@ public class Simulation {
         }
     }
 
+    //move taxi to destination
+    void move(Taxi taxi, Coordinate destination) {
+        //calculate movement
+        if(taxi.direction == Direction.RIGHT) {
+            //taxi should move and stop after this move
+            if(taxi.position.x + 0.4 >= destination.x) {
+                taxi.position.x  = destination.x;
+
+                //change direction if needed
+                if(taxi.position.y < destination.y) {
+                    taxi.direction = Direction.UP;
+                }
+                else {
+                    taxi.direction = Direction.DOWN;
+                }
+            }
+            //taxi continue moving right
+            else {
+                taxi.position.x += 0.4;
+            }
+        }
+        else if(taxi.direction == Direction.LEFT) {
+            //taxi should move and stop after this move
+            if(taxi.position.x - 0.4 <= destination.x) {
+                taxi.position.x  = destination.x;
+
+                //change direction if needed
+                if(taxi.position.y < destination.y) {
+                    taxi.direction = Direction.UP;
+                }
+                else {
+                    taxi.direction = Direction.DOWN;
+                }
+            }
+            //taxi continue moving left
+            else {
+                taxi.position.x -= 0.4;
+            }
+        }
+        else if(taxi.direction == Direction.UP) {
+            //taxi should move and stop after this move
+            if(taxi.position.y + 0.4 >= destination.y) {
+                taxi.position.y  = destination.y;
+                taxi.drivingToStart = false;
+            }
+            //taxi continue moving up
+            else {
+                taxi.position.y += 0.4;
+            }
+        }
+        else if(taxi.direction == Direction.DOWN) {
+            //taxi should move and stop
+            if(taxi.position.y - 0.4 <= destination.y) {
+                taxi.position.y  = destination.y;
+                taxi.drivingToStart = false;
+            }
+            //taxi continue moving down
+            else {
+                taxi.position.y -= 0.4;
+            }
+        }
+    }
+
     void stopSimulator() {
         timer.cancel();
     }
@@ -230,7 +231,7 @@ public class Simulation {
     }
 
     void printTaxis() {
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < NUM_OF_TAXIS; i++) {
             System.out.println("Taxi  "+ (i+1) + ": " + taxis[i].toString());
         }
     }
